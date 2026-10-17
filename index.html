@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AquaMind — Kendine bir yudum ayır</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0B2545">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="AquaMind">
+<meta name="description" content="AquaMind: su içmeyi unutanlar için hayali akıllı şişe ve uygulama konsepti.">
+<style>
+:root{
+  --navy:#0B2545;
+  --navy-2:#13315C;
+  --teal:#12B5C4;
+  --teal-dark:#0A7783;
+  --ice:#EAF7FB;
+  --ice-2:#D6EFF6;
+  --white:#fff;
+  --muted:#4A6178;
+  --line:#CFE6EE;
+  --amber-bg:#FFF1D6;
+  --amber-tx:#6E4300;
+  --danger:#B42318;
+  --shadow:0 10px 30px rgba(11,37,69,.08);
+  --r:22px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;font-family:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  color:var(--navy);background:linear-gradient(180deg,var(--ice) 0%,#f7fcfe 60%,#fff 100%);
+  min-height:100vh;line-height:1.5;-webkit-font-smoothing:antialiased;
+}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--teal-dark);outline-offset:2px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 18px}
+
+/* Header */
+header.top{padding:22px 0 8px}
+.brand{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:10px}
+.logo svg{width:42px;height:42px;flex:none}
+.logo b{font-size:1.6rem;letter-spacing:-.02em}
+.logo b span{color:var(--teal-dark)}
+.slogan{font-size:1rem;color:var(--muted);font-style:italic}
+.concept-tag{
+  display:inline-flex;align-items:center;gap:6px;background:var(--navy);color:#fff;
+  border-radius:999px;padding:6px 14px;font-size:.8rem;font-weight:600;
+}
+nav.tabs{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+nav.tabs a{
+  text-decoration:none;color:var(--navy);background:#fff;border:1px solid var(--line);
+  padding:8px 14px;border-radius:999px;font-size:.9rem;font-weight:600;min-height:40px;display:inline-flex;align-items:center;
+}
+nav.tabs a:hover{background:var(--ice-2)}
+
+/* Layout */
+main{padding:18px 0 40px;display:grid;gap:18px}
+.grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:18px}
+.stack{display:grid;gap:18px;align-content:start}
+@media (max-width:860px){.grid{grid-template-columns:minmax(0,1fr)}}
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:22px;box-shadow:var(--shadow)}
+.card h2{margin:0 0 4px;font-size:1.15rem;letter-spacing:-.01em}
+.sub{color:var(--muted);font-size:.9rem;margin:0 0 14px}
+
+/* Dashboard */
+.dash{display:grid;grid-template-columns:auto minmax(0,1fr);gap:22px;align-items:center}
+@media (max-width:560px){.dash{grid-template-columns:minmax(0,1fr);justify-items:center;text-align:center}}
+.ring{position:relative;width:190px;height:190px}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring .bg{stroke:var(--ice-2)}
+.ring .fg{stroke:var(--teal);transition:stroke-dashoffset .8s cubic-bezier(.2,.8,.2,1),stroke .3s}
+.ring .fg.over{stroke:var(--navy-2)}
+.ring .mid{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.ring .pct{font-size:2.5rem;font-weight:800;letter-spacing:-.03em;line-height:1}
+.ring .lbl{font-size:.8rem;color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;width:100%}
+.stat{background:var(--ice);border-radius:16px;padding:12px}
+.stat small{display:block;color:var(--muted);font-size:.75rem}
+.stat strong{font-size:1.2rem}
+.chip-over{
+  display:none;margin-top:12px;background:var(--amber-bg);color:var(--amber-tx);
+  border-radius:12px;padding:8px 12px;font-weight:600;font-size:.9rem;
+}
+.chip-over.show{display:block}
+.dayprog{margin-top:18px}
+.dayprog .row{display:flex;justify-content:space-between;font-size:.8rem;color:var(--muted);margin-bottom:6px;gap:8px}
+.bar{height:12px;background:var(--ice-2);border-radius:99px;overflow:hidden;position:relative}
+.bar i{display:block;height:100%;border-radius:99px;transition:width .8s cubic-bezier(.2,.8,.2,1)}
+.bar .time{background:var(--navy-2);opacity:.28;position:absolute;left:0;top:0}
+.bar .water{background:linear-gradient(90deg,var(--teal),#5ad3df);position:relative}
+.pace{font-size:.9rem;margin:10px 0 0;font-weight:600}
+.motivation{
+  margin-top:16px;background:linear-gradient(135deg,var(--navy),var(--navy-2));color:#fff;
+  border-radius:18px;padding:16px 18px;
+}
+.motivation small{opacity:.8;display:block;font-size:.75rem;text-transform:uppercase;letter-spacing:.08em}
+.motivation p{margin:4px 0 0;font-size:1.02rem}
+
+/* Add water */
+.quick{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.qbtn{
+  border:2px solid var(--teal);background:var(--ice);border-radius:18px;padding:14px 6px;min-height:76px;
+  font-weight:800;font-size:1.1rem;display:grid;gap:2px;justify-items:center;transition:transform .12s,background .15s,color .15s;
+}
+.qbtn svg{width:26px;height:26px}
+.qbtn:hover{background:var(--teal);color:var(--navy)}
+.qbtn:active{transform:scale(.95)}
+.custom{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+.field{display:grid;gap:4px;flex:1 1 140px;min-width:0}
+.field label{font-size:.82rem;font-weight:600;color:var(--muted)}
+.field input,.field select{
+  width:100%;border:1.5px solid var(--line);background:#fff;border-radius:14px;padding:11px 14px;min-height:46px;
+}
+.btn{
+  border:0;border-radius:14px;padding:11px 18px;min-height:46px;font-weight:700;
+  background:var(--navy);color:#fff;transition:transform .1s,background .15s;
+}
+.btn:hover{background:var(--navy-2)}
+.btn:active{transform:scale(.97)}
+.btn.teal{background:var(--teal-dark)}
+.btn.teal:hover{background:#085f69}
+.btn.ghost{background:#fff;color:var(--navy);border:1.5px solid var(--line)}
+.btn.ghost:hover{background:var(--ice)}
+.btn.danger{background:var(--danger)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.custom .btn{align-self:end}
+.err{color:var(--danger);font-size:.85rem;min-height:1.2em;margin:6px 0 0}
+.logbox{margin-top:14px;border-top:1px dashed var(--line);padding-top:12px}
+.logbox h3{font-size:.95rem;margin:0 0 8px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+ul.log{list-style:none;margin:0;padding:0;display:grid;gap:6px;max-height:210px;overflow:auto}
+ul.log li{display:flex;justify-content:space-between;align-items:center;gap:8px;background:var(--ice);border-radius:12px;padding:6px 8px 6px 12px;font-size:.92rem}
+ul.log li button{border:0;background:#fff;border-radius:10px;min-width:36px;min-height:36px;font-weight:700;color:var(--danger)}
+ul.log li button:hover{background:#ffe3e0}
+.empty{color:var(--muted);font-size:.9rem;margin:0}
+
+/* Bottle */
+.bottle-card{text-align:center}
+.demo-badge{
+  display:inline-flex;align-items:center;gap:8px;background:var(--ice);border:1px solid var(--line);
+  border-radius:999px;padding:6px 14px;font-size:.82rem;font-weight:600;
+}
+.demo-badge i{width:9px;height:9px;border-radius:50%;background:#E0A100;display:inline-block;animation:blink 1.6s infinite}
+.bottle-stage{position:relative;height:320px;display:grid;place-items:center;margin:8px 0}
+.bottle{position:relative;width:128px;height:290px}
+.cap{
+  position:absolute;left:50%;top:0;transform:translateX(-50%);width:62px;height:34px;border-radius:12px 12px 6px 6px;
+  background:linear-gradient(180deg,var(--navy-2),var(--navy));z-index:3;
+}
+.led{
+  position:absolute;left:50%;top:22px;transform:translateX(-50%);width:92px;height:26px;border-radius:50%;
+  border:4px solid #9db8c4;background:transparent;z-index:5;transition:border-color .3s,box-shadow .3s;
+}
+.led.on{border-color:var(--teal);box-shadow:0 0 14px 4px rgba(18,181,196,.8),0 0 40px 12px rgba(18,181,196,.45),inset 0 0 12px rgba(18,181,196,.8);animation:ledpulse 1s ease-in-out infinite}
+.bottle.alert .glass{box-shadow:0 0 30px 6px rgba(18,181,196,.55)}
+.glass{
+  position:absolute;left:0;right:0;bottom:0;top:38px;border:4px solid var(--navy);border-radius:34px 34px 40px 40px;
+  background:linear-gradient(90deg,rgba(255,255,255,.9),rgba(234,247,251,.7));overflow:hidden;z-index:2;
+}
+.glass::after{
+  content:"";position:absolute;top:10px;left:14px;width:10px;height:70%;border-radius:10px;background:rgba(255,255,255,.7);
+}
+.fillw{
+  position:absolute;left:0;right:0;bottom:0;height:0%;background:linear-gradient(180deg,#4fd0dc,var(--teal) 60%,#0e97a5);
+  transition:height 1s cubic-bezier(.2,.8,.2,1);
+}
+.fillw::before{
+  content:"";position:absolute;left:-50%;top:-12px;width:200%;height:24px;border-radius:45%;
+  background:rgba(79,208,220,.9);animation:wave 4s linear infinite;
+}
+.fillw.zero::before{display:none}
+.bottle .readout{
+  position:absolute;inset:38px 0 0 0;display:grid;place-content:center;z-index:4;font-weight:800;font-size:1.5rem;
+  color:var(--navy);text-shadow:0 1px 0 rgba(255,255,255,.8);pointer-events:none;
+}
+.bottle .readout small{display:block;font-size:.7rem;font-weight:600}
+.ledtxt{font-size:.85rem;color:var(--muted);min-height:1.3em;margin:4px 0 12px}
+@keyframes wave{to{transform:translateX(25%)}}
+@keyframes ledpulse{50%{opacity:.55}}
+@keyframes blink{50%{opacity:.3}}
+
+/* Settings */
+.switchrow{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.switch{position:relative;width:58px;height:32px;flex:none}
+.switch input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer;width:100%;height:100%;z-index:2}
+.switch span{position:absolute;inset:0;background:#9db8c4;border-radius:99px;transition:background .2s}
+.switch span::after{content:"";position:absolute;top:4px;left:4px;width:24px;height:24px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.switch input:checked+span{background:var(--teal-dark)}
+.switch input:checked+span::after{transform:translateX(26px)}
+.switch input:focus-visible+span{outline:3px solid var(--navy);outline-offset:2px}
+.note{background:var(--ice);border-radius:14px;padding:10px 14px;font-size:.85rem;color:var(--muted);margin:12px 0 0}
+.next{font-weight:700;margin:10px 0 0;font-size:.95rem}
+.form-row{display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin-top:12px}
+
+/* History */
+.chart{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;align-items:end;height:200px;position:relative;margin-top:8px;padding-top:10px}
+.col{display:grid;grid-template-rows:1fr auto auto;height:100%;justify-items:center;gap:4px;min-width:0}
+.col .track{width:100%;max-width:46px;display:flex;align-items:flex-end;background:var(--ice);border-radius:12px;overflow:hidden;position:relative}
+.col .track i{display:block;width:100%;background:linear-gradient(180deg,#5ad3df,var(--teal-dark));border-radius:12px 12px 0 0;transition:height .8s cubic-bezier(.2,.8,.2,1)}
+.col .track i.hit{background:linear-gradient(180deg,#38c27d,#1c8a56)}
+.col .v{font-size:.7rem;font-weight:700}
+.col .d{font-size:.75rem;color:var(--muted)}
+.col.today .d{color:var(--navy);font-weight:800}
+.goalline{position:absolute;left:0;right:0;border-top:2px dashed var(--navy-2);opacity:.6;pointer-events:none}
+.goalline span{position:absolute;right:0;top:-20px;font-size:.7rem;background:#fff;padding:0 4px;color:var(--navy-2);font-weight:700}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.78rem;color:var(--muted);margin-top:10px}
+.legend b{display:inline-block;width:12px;height:12px;border-radius:4px;vertical-align:-1px;margin-right:5px}
+table.hist{width:100%;border-collapse:collapse;margin-top:14px;font-size:.9rem}
+table.hist th,table.hist td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line)}
+table.hist th{font-size:.78rem;color:var(--muted);font-weight:600}
+.histwrap{overflow-x:auto}
+
+/* Product */
+.product{
+  background:linear-gradient(135deg,var(--navy) 0%,var(--navy-2) 70%,#0f4a73 100%);color:#fff;border:0;position:relative;overflow:hidden;
+}
+.product::after{content:"";position:absolute;right:-60px;top:-60px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(18,181,196,.55),transparent 70%)}
+.product>*{position:relative;z-index:1}
+.product h2{font-size:1.5rem}
+.product .sub{color:#c8dcea}
+.conceptwarn{display:inline-block;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.35);border-radius:12px;padding:6px 12px;font-size:.82rem;margin-bottom:12px}
+.features{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:16px}
+@media (max-width:860px){.features{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:420px){.features{grid-template-columns:minmax(0,1fr)}}
+.feat{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:16px;padding:14px}
+.feat svg{width:28px;height:28px;margin-bottom:6px;stroke:#5ad3df}
+.feat b{display:block}
+.feat span{font-size:.85rem;color:#c8dcea}
+.big-slogan{font-size:1.3rem;font-weight:800;margin:18px 0 0;letter-spacing:-.01em}
+
+footer{padding:10px 0 40px;color:var(--muted);font-size:.82rem;text-align:center}
+
+/* Giriş ekranı ve kullanıcı çubuğu */
+.userbar{background:var(--navy);color:#fff;font-size:1.1rem}
+.userbar .wrap{display:flex;justify-content:space-between;align-items:center;gap:10px;padding-top:12px;padding-bottom:12px;flex-wrap:wrap}
+.userbar strong{color:#7fe3ec;font-size:1.3rem;overflow-wrap:anywhere}
+.userbar button{background:transparent;border:1.5px solid rgba(255,255,255,.5);color:#fff;border-radius:999px;padding:6px 14px;min-height:36px;font-weight:600}
+.userbar button:hover{background:rgba(255,255,255,.15)}
+#login{
+  position:fixed;inset:0;z-index:100;display:none;place-items:center;padding:18px;overflow:auto;
+  background:linear-gradient(160deg,var(--navy) 0%,var(--navy-2) 55%,#0f6a85 100%);
+}
+#login.show{display:grid}
+.login-card{background:#fff;border-radius:28px;padding:32px 26px;width:min(100%,420px);text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.4)}
+.login-card svg{width:68px;height:68px}
+.login-card h1{margin:8px 0 2px;font-size:2rem;letter-spacing:-.02em}
+.login-card h1 span{color:var(--teal-dark)}
+.login-card .slogan{margin:0 0 20px;display:block}
+.login-card .field{text-align:left;margin-bottom:14px}
+.ok{color:#0b6b3a;background:#e3f7ec;border-radius:12px;font-weight:600;font-size:.9rem;margin:0 0 10px;padding:0;text-align:left}
+.ok:not(:empty){padding:10px 12px}
+.login-card .btn{width:100%}
+.login-card .btn+.btn{margin-top:10px}
+.login-card .tiny{font-size:.78rem;color:var(--muted);margin:14px 0 0}
+
+/* Toasts */
+#toasts{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);display:grid;gap:8px;z-index:60;width:min(92vw,420px)}
+.toast{
+  background:var(--navy);color:#fff;border-radius:16px;padding:12px 16px;box-shadow:0 12px 30px rgba(0,0,0,.3);
+  animation:pop .3s ease;font-weight:600;display:flex;gap:10px;align-items:center
+}
+.toast.remind{background:var(--teal-dark)}
+.toast.warn{background:var(--danger)}
+@keyframes pop{from{transform:translateY(14px);opacity:0}}
+dialog{border:0;border-radius:20px;padding:24px;max-width:min(92vw,420px);box-shadow:0 20px 60px rgba(0,0,0,.35)}
+dialog::backdrop{background:rgba(11,37,69,.55)}
+dialog h3{margin:0 0 8px}
+dialog .actions{display:flex;gap:10px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap}
+
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div id="login" role="dialog" aria-modal="true" aria-labelledby="loginT">
+  <form class="login-card" id="loginForm" novalidate>
+    <svg viewBox="0 0 48 48" aria-hidden="true">
+      <defs><linearGradient id="lg2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5ad3df"/><stop offset="1" stop-color="#0A7783"/></linearGradient></defs>
+      <path d="M24 3C24 3 8 20 8 31a16 16 0 0 0 32 0C40 20 24 3 24 3z" fill="url(#lg2)"/>
+      <path d="M17 31c1 4 4 7 8 7" stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none" opacity=".85"/>
+    </svg>
+    <h1 id="loginT">Aqua<span>Mind</span></h1>
+    <span class="slogan">Kendine bir yudum ayır.</span>
+    <div class="field">
+      <label for="loginName">Kullanıcı adı</label>
+      <input id="loginName" type="text" maxlength="30" autocomplete="username" placeholder="Örn. Ayşe">
+    </div>
+    <div class="field">
+      <label for="loginPass">Şifre</label>
+      <input id="loginPass" type="password" maxlength="40" autocomplete="current-password" placeholder="Şifre">
+    </div>
+    <p class="err" id="loginErr" role="alert"></p>
+    <p class="ok" id="loginOk" role="status"></p>
+    <button class="btn teal" type="button" id="loginBtn">Giriş yap</button>
+    <button class="btn ghost" type="button" id="signupBtn">Hesap oluştur</button>
+    <p class="tiny">İlk kez mi giriyorsun? Kullanıcı adı ve şifre yazıp <b>Hesap oluştur</b>'a bas. Bu bir okul projesi demosudur: hesaplar yalnızca bu bilgisayarın tarayıcısında saklanır, gerçek bir güvenlik sistemi değildir; gerçek şifreni kullanma.</p>
+  </form>
+</div>
+
+<div class="userbar" id="userbar">
+  <div class="wrap">
+    <span>Hoş geldin, <strong id="userName"></strong> 👋</span>
+    <button type="button" id="logoutBtn">Çıkış yap</button>
+  </div>
+</div>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <div class="logo">
+        <svg viewBox="0 0 48 48" role="img" aria-label="AquaMind logosu">
+          <defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5ad3df"/><stop offset="1" stop-color="#0A7783"/></linearGradient></defs>
+          <path d="M24 3C24 3 8 20 8 31a16 16 0 0 0 32 0C40 20 24 3 24 3z" fill="url(#lg)"/>
+          <path d="M17 31c1 4 4 7 8 7" stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none" opacity=".85"/>
+        </svg>
+        <div>
+          <b>Aqua<span>Mind</span></b><br>
+          <span class="slogan">Kendine bir yudum ayır.</span>
+        </div>
+      </div>
+    </div>
+    <nav class="tabs" aria-label="Bölümler">
+      <a href="#panel">Panel</a>
+      <a href="#sise">Akıllı şişe</a>
+      <a href="#hatirlatma">Hatırlatma</a>
+      <a href="#gecmis">Geçmiş</a>
+      <a href="#urun">Ürün</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="grid">
+    <div class="stack">
+      <!-- Dashboard -->
+      <section class="card" id="panel" aria-labelledby="h-panel">
+        <h2 id="h-panel">Bugünün ilerlemesi</h2>
+        <p class="sub" id="todayLabel"></p>
+        <div class="dash">
+          <div class="ring" role="img" id="ringA11y" aria-label="Hedef ilerlemesi">
+            <svg viewBox="0 0 140 140" aria-hidden="true">
+              <circle class="bg" cx="70" cy="70" r="58" fill="none" stroke-width="14"/>
+              <circle class="fg" id="ringFg" cx="70" cy="70" r="58" fill="none" stroke-width="14" stroke-linecap="round" stroke-dasharray="364.42" stroke-dashoffset="364.42"/>
+            </svg>
+            <div class="mid"><div class="pct" id="pct">0%</div><div class="lbl">tamamlandı</div></div>
+          </div>
+          <div style="width:100%">
+            <div class="stats">
+              <div class="stat"><small>İçilen</small><strong id="sDrunk">0 ml</strong></div>
+              <div class="stat"><small>Hedef</small><strong id="sGoal">2000 ml</strong></div>
+              <div class="stat"><small id="sRemLbl">Kalan</small><strong id="sRem">2000 ml</strong></div>
+            </div>
+            <div class="chip-over" id="overChip" role="status"></div>
+          </div>
+        </div>
+        <div class="dayprog">
+          <div class="row"><span>Günün ilerlemesi (07:00–23:00)</span><span id="dayPct"></span></div>
+          <div class="bar" aria-hidden="true"><i class="time" id="timeBar" style="width:0"></i><i class="water" id="waterBar" style="width:0"></i></div>
+          <p class="pace" id="pace"></p>
+        </div>
+        <div class="motivation"><small>Günün motivasyonu</small><p id="motiv"></p></div>
+      </section>
+
+      <!-- Add water -->
+      <section class="card" aria-labelledby="h-add">
+        <h2 id="h-add">Su ekle</h2>
+        <p class="sub">Bir butona dokun, şişe ve panel anında güncellensin.</p>
+        <div class="quick">
+          <button class="qbtn" data-ml="200" aria-label="200 mililitre su ekle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 4h12l-1.5 16h-9z"/><path d="M7 10h10"/></svg>+200 ml</button>
+          <button class="qbtn" data-ml="300" aria-label="300 mililitre su ekle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 4h12l-1.5 16h-9z"/><path d="M7.4 8h9.2"/></svg>+300 ml</button>
+          <button class="qbtn" data-ml="500" aria-label="500 mililitre su ekle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 2h4v3l2 3v13a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V8l2-3z"/><path d="M8 13h8"/></svg>+500 ml</button>
+        </div>
+        <form class="custom" id="customForm" novalidate>
+          <div class="field">
+            <label for="customMl">Özel miktar (ml)</label>
+            <input id="customMl" type="text" inputmode="numeric" maxlength="5" placeholder="Örn. 250" autocomplete="off">
+          </div>
+          <button class="btn teal" type="button" id="customAdd">Ekle</button>
+        </form>
+        <p class="err" id="addErr" role="alert"></p>
+        <div class="logbox">
+          <h3>Bugünkü kayıtlar
+            <button class="btn ghost" id="undoBtn" type="button" style="min-height:38px;padding:6px 14px">↶ Son eklemeyi geri al</button>
+          </h3>
+          <ul class="log" id="log"></ul>
+        </div>
+      </section>
+    </div>
+
+    <div class="stack">
+      <!-- Bottle -->
+      <section class="card bottle-card" id="sise" aria-labelledby="h-bottle">
+        <h2 id="h-bottle">AquaMind Akıllı Şişe</h2>
+        <span class="demo-badge"><i></i>Demo modu — simüle ediliyor</span>
+        <div class="bottle-stage">
+          <div class="bottle" role="img" id="bottleA11y" aria-label="Şişe doluluk göstergesi">
+            <div class="cap"></div>
+            <div class="led" id="led"></div>
+            <div class="glass"><div class="fillw zero" id="fillw"></div></div>
+            <div class="readout"><div><span id="bPct">0%</span><small>şişe seviyesi</small></div></div>
+          </div>
+        </div>
+        <p class="ledtxt" id="ledTxt" aria-live="polite">LED halkası: sakin. Hatırlatma geldiğinde yanıp söner.</p>
+        <button class="btn ghost" id="testLed" type="button">💡 LED uyarısını şimdi göster</button>
+        <p class="note" style="text-align:left">Gerçek bir şişeye bağlı değildir. Bu ekran, ürünün nasıl çalışacağını gösteren bir simülasyondur.</p>
+      </section>
+
+      <!-- Reminders -->
+      <section class="card" id="hatirlatma" aria-labelledby="h-rem">
+        <h2 id="h-rem">Hatırlatmalar</h2>
+        <div class="switchrow">
+          <span id="remLabel" style="font-weight:600">Hatırlatmalar kapalı</span>
+          <label class="switch">
+            <input type="checkbox" id="remToggle" role="switch" aria-label="Hatırlatmaları aç veya kapat"><span></span>
+          </label>
+        </div>
+        <div class="form-row">
+          <div class="field">
+            <label for="interval">Hatırlatma aralığı</label>
+            <select id="interval">
+              <option value="15">15 saniye (sunum demosu)</option>
+              <option value="1800">30 dakika</option>
+              <option value="2700">45 dakika</option>
+              <option value="3600">1 saat</option>
+              <option value="5400">1,5 saat</option>
+              <option value="7200">2 saat</option>
+            </select>
+          </div>
+        </div>
+        <p class="next" id="nextTxt" aria-live="off"></p>
+        <p class="note">Hatırlatmalar uygulama açıkken veya arka planda çalışırken gelir. Uygulama tamamen kapatıldığında bildirim gelmesi garanti edilmez. Telefonda önce uygulamayı ana ekrana ekle, sonra hatırlatmayı aç ve bildirim izni ver. İzin verilmezse uyarılar uygulama içinde gösterilir.</p>
+      </section>
+
+      <!-- Goal -->
+      <section class="card" aria-labelledby="h-goal">
+        <h2 id="h-goal">Günlük hedef</h2>
+        <p class="sub">Varsayılan 2000 ml, yalnızca başlangıç değeridir; herkes için geçerli bir sağlık önerisi değildir. Kendi ihtiyacın için bir uzmana danışabilirsin.</p>
+        <form class="form-row" id="goalForm" novalidate>
+          <div class="field">
+            <label for="goalInput">Hedef (ml)</label>
+            <input id="goalInput" type="number" inputmode="numeric" min="500" max="6000" step="50">
+          </div>
+          <button class="btn" type="submit">Hedefi kaydet</button>
+        </form>
+        <p class="err" id="goalErr" role="alert"></p>
+      </section>
+    </div>
+  </div>
+
+  <!-- History -->
+  <section class="card" id="gecmis" aria-labelledby="h-hist">
+    <h2 id="h-hist">Son 7 gün</h2>
+    <p class="sub">Veriler bu tarayıcıda tarihe göre saklanır. Geçmiş günler silinmez.</p>
+    <div class="chart" id="chart" role="group" aria-label="Haftalık su tüketimi grafiği"></div>
+    <div class="legend"><span><b style="background:var(--teal-dark)"></b>Hedefin altında</span><span><b style="background:#1c8a56"></b>Hedefe ulaşıldı</span><span><b style="background:var(--navy-2);opacity:.6"></b>Güncel hedef çizgisi</span></div>
+    <div class="histwrap">
+      <table class="hist">
+        <thead><tr><th scope="col">Gün</th><th scope="col">Toplam</th><th scope="col">Güncel hedefe oranı</th></tr></thead>
+        <tbody id="histBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Product -->
+  <section class="card product" id="urun" aria-labelledby="h-prod">
+    <span class="conceptwarn">Bu bölüm hayali bir ürün konseptini tanıtır. AquaMind gerçek bir ürün değildir.</span>
+    <h2 id="h-prod">AquaMind nedir?</h2>
+    <p class="sub" style="max-width:62ch">AquaMind, su içmeyi unutan kişilere yardımcı olmak için tasarlanmış hayali bir akıllı su şişesi ve mobil uygulama konseptidir. Şişenin LED halkası nazikçe hatırlatır, uygulama gününü sade bir şekilde takip eder.</p>
+    <div class="features">
+      <div class="feat"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/></svg><b>Su tüketimi takibi</b><span>Her yudum tek dokunuşla kaydedilir.</span></div>
+      <div class="feat"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><b>Hatırlatma</b><span>Seçtiğin aralıkta yumuşak uyarılar.</span></div>
+      <div class="feat"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/></svg><b>Günlük hedef</b><span>Hedefi sen belirlersin, ilerleme anında görünür.</span></div>
+      <div class="feat"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 2h4v3l2 3v13a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V8l2-3z"/><path d="M9 6h6"/></svg><b>Akıllı şişe konsepti</b><span>LED halkalı, uygulamayla eşleşen şişe fikri.</span></div>
+    </div>
+    <p class="big-slogan">“Kendine bir yudum ayır.”</p>
+  </section>
+
+  <section class="card" aria-labelledby="h-set">
+    <h2 id="h-set">Ayarlar</h2>
+    <p class="sub">Tüm kayıtlarını ve ayarlarını bu tarayıcıdan silmek istersen kullanabilirsin.</p>
+    <button class="btn danger" id="resetBtn" type="button">Verileri sıfırla</button>
+  </section>
+</main>
+
+<footer class="wrap">AquaMind — Reklam ve Toplum dersi için hazırlanmış hayali ürün konsepti. Tıbbi tavsiye içermez.</footer>
+
+<div id="toasts" aria-live="polite" aria-atomic="false"></div>
+
+<dialog id="resetDlg" aria-labelledby="rdT">
+  <h3 id="rdT">Tüm veriler silinsin mi?</h3>
+  <p>Bu hesaptaki günlük kayıtların, geçmişin, hedefin ve hatırlatma ayarların silinecek. Hesabın (kullanıcı adı ve şifre) kalır. Bu işlem geri alınamaz.</p>
+  <div class="actions">
+    <button class="btn ghost" id="rdCancel" type="button">Vazgeç</button>
+    <button class="btn danger" id="rdOk" type="button">Evet, sıfırla</button>
+  </div>
+</dialog>
+
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- Storage (localStorage, bellek yedekli) ---------- */
+  var KEY = 'aquamind.v1';
+  var memStore = null;
+  function defaults(){ return {user:'', goal:2000, remind:false, interval:3600, days:{}}; }
+  function load(){
+    try{
+      var raw = window.localStorage.getItem(KEY);
+      if(!raw) return defaults();
+      var d = JSON.parse(raw);
+      var s = defaults();
+      if(d && typeof d === 'object'){
+        if(isFinite(d.goal) && d.goal >= 500 && d.goal <= 6000) s.goal = Math.round(d.goal);
+        if(typeof d.user === 'string') s.user = d.user.trim().slice(0,30);
+        s.remind = d.remind === true;
+        if(isFinite(d.interval) && d.interval > 0) s.interval = Math.round(d.interval);
+        if(d.days && typeof d.days === 'object'){
+          Object.keys(d.days).forEach(function(k){
+            if(/^\d{4}-\d{2}-\d{2}$/.test(k) && Array.isArray(d.days[k])){
+              s.days[k] = d.days[k].filter(function(e){return e && isFinite(e.ml) && e.ml > 0;})
+                .map(function(e){return {id:String(e.id||Math.random()), ml:Math.round(e.ml), t:isFinite(e.t)?e.t:0};});
+            }
+          });
+        }
+      }
+      return s;
+    }catch(e){ return memStore || defaults(); }
+  }
+  function save(){
+    memStore = state;
+    if(!auth.current) return;
+    try{ window.localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){ /* depolama kapalıysa bellekte devam eder */ }
+  }
+  var AUTH_KEY = 'aquamind.auth.v1';
+  var auth = loadAuth();
+  if(auth.current && auth.users[auth.current]) KEY = 'aquamind.u.' + encodeURIComponent(auth.current);
+  else auth.current = '';
+  var state = auth.current ? load() : defaults();
+  memStore = state;
+  function loadAuth(){
+    try{
+      var a = JSON.parse(window.localStorage.getItem(AUTH_KEY) || 'null');
+      if(a && typeof a === 'object' && a.users && typeof a.users === 'object') return {users:a.users, current:typeof a.current==='string'?a.current:''};
+    }catch(e){}
+    return {users:{}, current:''};
+  }
+  function saveAuth(){ try{ window.localStorage.setItem(AUTH_KEY, JSON.stringify(auth)); }catch(e){} }
+  function hashPw(pw, salt){
+    var s = salt + '|' + pw, h1 = 0xdeadbeef, h2 = 0x41c6ce57;
+    for(var i=0;i<s.length;i++){ var c = s.charCodeAt(i); h1 = Math.imul(h1 ^ c, 2654435761); h2 = Math.imul(h2 ^ c, 1597334677); }
+    h1 = Math.imul(h1 ^ (h1>>>16), 2246822507) ^ Math.imul(h2 ^ (h2>>>13), 3266489909);
+    h2 = Math.imul(h2 ^ (h2>>>16), 2246822507) ^ Math.imul(h1 ^ (h1>>>13), 3266489909);
+    return (4294967296 * (2097151 & h2) + (h1>>>0)).toString(36);
+  }
+
+  /* ---------- Yardımcılar ---------- */
+  var $ = function(id){ return document.getElementById(id); };
+  function pad(n){ return (n<10?'0':'')+n; }
+  function keyOf(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+  function todayKey(){ return keyOf(new Date()); }
+  function fmt(n){ return Math.round(n).toLocaleString('tr-TR'); }
+  function dayList(k){ return state.days[k] || []; }
+  function total(k){ return dayList(k).reduce(function(a,e){return a+e.ml;},0); }
+  var currentKey = todayKey();
+
+  function toast(msg, cls){
+    var t = document.createElement('div');
+    t.className = 'toast' + (cls ? ' '+cls : '');
+    t.textContent = msg;
+    $('toasts').appendChild(t);
+    setTimeout(function(){ if(t.parentNode) t.parentNode.removeChild(t); }, 4200);
+    while($('toasts').children.length > 3) $('toasts').removeChild($('toasts').firstChild);
+  }
+
+  /* ---------- Metinler ---------- */
+  var MOTIVS = [
+    'Küçük yudumlar, büyük fark yaratır.',
+    'Bugün kendine iyi bak: bir bardak su iyi bir başlangıç.',
+    'Su molası, zihnine verdiğin küçük bir mola.',
+    'Hedef büyük görünüyorsa bir yudumla başla.',
+    'Şişen hazır, sıra sende.',
+    'Her bardak, günün için küçük bir söz.',
+    'Kendine bir yudum ayır; gerisi kolay.'
+  ];
+  var CHEERS = [
+    'Harika, bir yudum daha! 💧','Çok iyi gidiyorsun!','Güzel hamle, devam!','Şişen sana teşekkür ediyor.','Tam zamanında bir yudum!'
+  ];
+
+  /* ---------- Çizim ---------- */
+  var CIRC = 2 * Math.PI * 58;
+  function render(){
+    var k = currentKey;
+    var drunk = total(k), goal = state.goal;
+    var pct = goal > 0 ? drunk / goal * 100 : 0;
+    var pctShown = Math.round(pct);
+    var over = drunk - goal;
+
+    $('todayLabel').textContent = new Date().toLocaleDateString('tr-TR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+    $('pct').textContent = pctShown + '%';
+    $('ringFg').style.strokeDashoffset = CIRC * (1 - Math.min(pct,100)/100);
+    $('ringFg').classList.toggle('over', over > 0);
+    $('ringA11y').setAttribute('aria-label','Hedefin yüzde '+pctShown+' kadarı tamamlandı');
+    $('sDrunk').textContent = fmt(drunk)+' ml';
+    $('sGoal').textContent = fmt(goal)+' ml';
+    if(over > 0){
+      $('sRemLbl').textContent = 'Kalan'; $('sRem').textContent = '0 ml';
+      $('overChip').textContent = '🎉 Hedef aşıldı: +'+fmt(over)+' ml fazla (%'+pctShown+')';
+      $('overChip').classList.add('show');
+    }else{
+      $('sRemLbl').textContent = 'Kalan'; $('sRem').textContent = fmt(goal-drunk)+' ml';
+      $('overChip').classList.remove('show');
+      if(drunk === goal && goal>0){ $('overChip').textContent = '🎉 Günlük hedefe ulaştın!'; $('overChip').classList.add('show'); }
+    }
+
+    // Gün ilerlemesi
+    var now = new Date();
+    var hours = now.getHours() + now.getMinutes()/60;
+    var tp = Math.max(0, Math.min(1, (hours-7)/16))*100;
+    $('timeBar').style.width = tp+'%';
+    $('waterBar').style.width = Math.min(pct,100)+'%';
+    $('dayPct').textContent = 'Gün: %'+Math.round(tp)+' • Su: %'+pctShown;
+    var diff = Math.min(pct,100) - tp;
+    var pace;
+    if(pct >= 100) pace = 'Hedefe ulaştın. Tebrikler!';
+    else if(tp <= 0) pace = 'Güne erken başlamak güzel bir fikir.';
+    else if(diff >= -5) pace = 'Günün ritmindesin.';
+    else pace = 'Günün biraz gerisindesin; bir yudum zamanı.';
+    $('pace').textContent = pace;
+
+    $('motiv').textContent = MOTIVS[dayIndex(now) % MOTIVS.length];
+
+    // Şişe
+    var fill = Math.max(0, Math.min(100, pct));
+    $('fillw').style.height = fill + '%';
+    $('fillw').classList.toggle('zero', fill <= 0);
+    $('bPct').textContent = pctShown + '%';
+    $('bottleA11y').setAttribute('aria-label','Şişe seviyesi yüzde '+Math.min(pctShown,100));
+
+    renderLog(); renderHistory();
+    $('goalInput').value = goal;
+  }
+  function dayIndex(d){ return Math.floor(new Date(d.getFullYear(),d.getMonth(),d.getDate()).getTime()/86400000); }
+
+  function renderLog(){
+    var ul = $('log'); ul.innerHTML = '';
+    var list = dayList(currentKey);
+    if(!list.length){
+      var li = document.createElement('li'); li.style.background='transparent'; li.style.padding='0';
+      var p = document.createElement('p'); p.className='empty'; p.textContent='Bugün henüz kayıt yok. İlk yudumunu ekle!';
+      li.appendChild(p); ul.appendChild(li);
+    }
+    list.slice().reverse().forEach(function(e){
+      var li = document.createElement('li');
+      var sp = document.createElement('span');
+      var t = new Date(e.t);
+      sp.textContent = (e.t ? pad(t.getHours())+':'+pad(t.getMinutes())+' — ' : '') + fmt(e.ml)+' ml';
+      var b = document.createElement('button');
+      b.type='button'; b.textContent='✕'; b.setAttribute('aria-label', fmt(e.ml)+' mililitrelik kaydı sil');
+      b.addEventListener('click', function(){ removeEntry(e.id); });
+      li.appendChild(sp); li.appendChild(b); ul.appendChild(li);
+    });
+    $('undoBtn').disabled = list.length === 0;
+  }
+
+  function renderHistory(){
+    var chart = $('chart'); chart.innerHTML = '';
+    var rows = [];
+    var base = new Date();
+    for(var i=6;i>=0;i--){
+      var d = new Date(base.getFullYear(), base.getMonth(), base.getDate()-i);
+      rows.push({date:d, key:keyOf(d), ml:total(keyOf(d))});
+    }
+    var max = Math.max(state.goal, Math.max.apply(null, rows.map(function(r){return r.ml;})), 1) * 1.1;
+    rows.forEach(function(r, idx){
+      var col = document.createElement('div'); col.className = 'col' + (idx===6?' today':'');
+      var track = document.createElement('div'); track.className='track';
+      var bar = document.createElement('i');
+      bar.style.height = (r.ml/max*100)+'%';
+      if(r.ml >= state.goal && r.ml>0) bar.className='hit';
+      track.appendChild(bar);
+      var v = document.createElement('div'); v.className='v'; v.textContent = r.ml ? fmt(r.ml) : '0';
+      var dd = document.createElement('div'); dd.className='d';
+      dd.textContent = idx===6 ? 'Bugün' : r.date.toLocaleDateString('tr-TR',{weekday:'short'});
+      col.setAttribute('role','img');
+      col.setAttribute('aria-label', r.date.toLocaleDateString('tr-TR',{weekday:'long',day:'numeric',month:'long'})+': '+r.ml+' mililitre');
+      col.appendChild(track); col.appendChild(v); col.appendChild(dd);
+      chart.appendChild(col);
+    });
+    // hedef çizgisi: sütun alanı yüksekliğine göre konumla
+    var line = document.createElement('div'); line.className='goalline';
+    var span = document.createElement('span'); span.textContent='Hedef '+fmt(state.goal);
+    line.appendChild(span); chart.appendChild(line);
+    requestAnimationFrame(function(){
+      var tr = chart.querySelector('.track');
+      if(!tr) return;
+      var cr = chart.getBoundingClientRect(), trr = tr.getBoundingClientRect();
+      var y = trr.bottom - cr.top - (state.goal/max)*trr.height;
+      line.style.top = y+'px';
+    });
+
+    var tb = $('histBody'); tb.innerHTML='';
+    rows.slice().reverse().forEach(function(r, idx){
+      var tr = document.createElement('tr');
+      var c1 = document.createElement('td'); c1.textContent = (idx===0?'Bugün — ':'')+r.date.toLocaleDateString('tr-TR',{weekday:'long',day:'numeric',month:'short'});
+      var c2 = document.createElement('td'); c2.textContent = fmt(r.ml)+' ml';
+      var c3 = document.createElement('td'); c3.textContent = '%'+Math.round(r.ml/state.goal*100);
+      tr.appendChild(c1); tr.appendChild(c2); tr.appendChild(c3); tb.appendChild(tr);
+    });
+  }
+  window.addEventListener('resize', function(){ renderHistory(); });
+
+  /* ---------- Su ekle / geri al ---------- */
+  function addWater(ml){
+    if(!isFinite(ml) || ml <= 0 || ml > 3000 || Math.floor(ml) !== ml) return false;
+    rollover();
+    var k = currentKey;
+    if(!state.days[k]) state.days[k] = [];
+    state.days[k].push({id: Date.now().toString(36)+Math.random().toString(36).slice(2,6), ml: ml, t: Date.now()});
+    var before = total(k) - ml, goal = state.goal;
+    save(); render();
+    if(before < goal && total(k) >= goal) toast('🎉 Günlük hedefe ulaştın! Kendine bir yudum ayırdın.');
+    else toast('+'+fmt(ml)+' ml eklendi. '+CHEERS[Math.floor(Math.random()*CHEERS.length)]);
+    resetCountdown();
+    return true;
+  }
+  function removeEntry(id){
+    var list = dayList(currentKey);
+    var i = list.findIndex(function(e){return e.id===id;});
+    if(i < 0) return;
+    var ml = list[i].ml;
+    list.splice(i,1); save(); render();
+    toast(fmt(ml)+' ml kaydı silindi.');
+  }
+  document.querySelectorAll('.qbtn').forEach(function(b){
+    b.addEventListener('click', function(){ addWater(parseInt(b.getAttribute('data-ml'),10)); });
+  });
+  $('customForm').addEventListener('submit', function(ev){ ev.preventDefault(); addCustom(); });
+  $('customAdd').addEventListener('click', addCustom);
+  function addCustom(){
+    var raw = $('customMl').value.trim().replace(/\s*ml$/i,'');
+    var err = $('addErr'); err.textContent='';
+    if(raw === ''){ err.textContent='Lütfen bir miktar gir.'; return; }
+    var n = Number(raw);
+    if(!isFinite(n) || n <= 0){ err.textContent='Miktar 0\'dan büyük bir sayı olmalı.'; return; }
+    if(Math.floor(n) !== n){ err.textContent='Lütfen tam sayı gir (örn. 250).'; return; }
+    if(n > 3000){ err.textContent='Tek seferde en fazla 3000 ml ekleyebilirsin.'; return; }
+    if(addWater(n)) $('customMl').value='';
+  }
+
+  /* ---------- Giriş ---------- */
+  function showLogin(){
+    $('login').classList.add('show');
+    $('loginErr').textContent=''; $('loginOk').textContent='';
+    $('loginPass').value = '';
+    setTimeout(function(){ $('loginName').focus(); }, 50);
+  }
+  function applyUser(){
+    var has = !!state.user;
+    $('login').classList.toggle('show', !has);
+    $('userbar').style.display = has ? '' : 'none';
+    $('userName').textContent = state.user;
+    document.title = has ? 'AquaMind — '+state.user : 'AquaMind — Kendine bir yudum ayır';
+  }
+  function readLogin(){
+    var name = $('loginName').value.replace(/\s+/g,' ').trim();
+    var pass = $('loginPass').value;
+    var err = $('loginErr'); err.textContent=''; $('loginOk').textContent='';
+    if(!name){ err.textContent='Lütfen kullanıcı adını yaz.'; return null; }
+    if(!pass){ err.textContent='Lütfen şifreni yaz.'; return null; }
+    return {name:name.slice(0,30), key:name.slice(0,30).toLowerCase(), pass:pass};
+  }
+  function enterUser(){
+    var u = auth.users[auth.current];
+    KEY = 'aquamind.u.' + encodeURIComponent(auth.current);
+    state = load(); state.user = u.name; memStore = state;
+    currentKey = todayKey();
+    stopTimer();
+    syncReminderUI(); render(); applyUser();
+    if(state.remind) startTimer();
+  }
+  function doLogin(){
+    var f = readLogin(); if(!f) return;
+    var u = auth.users[f.key];
+    if(!u){ $('loginErr').textContent='Bu kullanıcı adıyla hesap yok. "Hesap oluştur"a bas.'; return; }
+    if(u.hash !== hashPw(f.pass, u.salt)){ $('loginErr').textContent='Şifre yanlış. Tekrar dene.'; return; }
+    auth.current = f.key; saveAuth(); $('loginPass').value=''; enterUser();
+    toast('Tekrar hoş geldin '+u.name+'! 💧');
+  }
+  function doSignup(){
+    var f = readLogin(); if(!f) return;
+    if(auth.users[f.key]){ $('loginErr').textContent='Bu kullanıcı adı zaten var. "Giriş yap"a bas.'; return; }
+    var salt = Math.random().toString(36).slice(2,10);
+    auth.users[f.key] = {name:f.name, salt:salt, hash:hashPw(f.pass, salt)};
+    saveAuth();
+    $('loginPass').value=''; $('loginName').value=f.name;
+    $('loginOk').textContent='✅ Hesabınız oluşturuldu! Şimdi şifrenizi girerek giriş yapabilirsiniz.';
+    $('loginPass').focus();
+  }
+  $('loginBtn').addEventListener('click', doLogin);
+  $('signupBtn').addEventListener('click', doSignup);
+  $('loginForm').addEventListener('submit', function(ev){ ev.preventDefault(); doLogin(); });
+  ['loginName','loginPass'].forEach(function(id){
+    $(id).addEventListener('keydown', function(ev){ if(ev.key === 'Enter'){ ev.preventDefault(); doLogin(); } });
+  });
+  $('logoutBtn').addEventListener('click', function(){
+    stopTimer(); auth.current=''; saveAuth();
+    state = defaults(); memStore = state; KEY = 'aquamind.v1.guest';
+    syncReminderUI(); render(); applyUser(); showLogin();
+  });
+  $('undoBtn').addEventListener('click', function(){
+    var list = dayList(currentKey);
+    if(!list.length) return;
+    var last = list.pop(); save(); render();
+    toast('Geri alındı: '+fmt(last.ml)+' ml');
+  });
+
+  /* ---------- Hedef ---------- */
+  $('goalForm').addEventListener('submit', function(ev){
+    ev.preventDefault();
+    var err = $('goalErr'); err.textContent='';
+    var raw = $('goalInput').value.trim();
+    var n = Number(raw);
+    if(raw === '' || !isFinite(n) || Math.floor(n) !== n){ err.textContent='Lütfen tam sayı olarak bir hedef gir.'; return; }
+    if(n < 500 || n > 6000){ err.textContent='Hedef 500 ile 6000 ml arasında olmalı.'; return; }
+    state.goal = n; save(); render();
+    toast('Günlük hedef '+fmt(n)+' ml olarak güncellendi.');
+  });
+
+  /* ---------- Hatırlatma (tek zamanlayıcı) ---------- */
+  var timerId = null, nextAt = 0, ledTimeout = null, swReg = null;
+  if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){
+    navigator.serviceWorker.register('sw.js').then(function(r){ swReg = r; return navigator.serviceWorker.ready; }).then(function(r){ swReg = r; }).catch(function(){});
+  }
+
+  function stopTimer(){ if(timerId !== null){ clearInterval(timerId); timerId = null; } }
+  function startTimer(){
+    stopTimer();                                   // asla ikinci zamanlayıcı oluşturma
+    resetCountdown();
+    timerId = setInterval(tick, 1000);
+  }
+  function resetCountdown(){
+    nextAt = Date.now() + state.interval*1000;
+    updateNext();
+  }
+  function updateNext(){
+    var el = $('nextTxt');
+    if(!state.remind){ el.textContent=''; return; }
+    var s = Math.max(0, Math.round((nextAt-Date.now())/1000));
+    var txt = s>=3600 ? Math.floor(s/3600)+' sa '+pad(Math.floor(s%3600/60))+' dk' : pad(Math.floor(s/60))+':'+pad(s%60);
+    el.textContent = 'Sonraki hatırlatma: '+txt;
+  }
+  function tick(){
+    rollover();
+    if(!state.remind){ stopTimer(); return; }
+    if(Date.now() >= nextAt){
+      nextAt = Date.now() + state.interval*1000;
+      if(total(currentKey) < state.goal) fireReminder(); // hedef tamamsa rahatsız etme
+    }
+    updateNext();
+  }
+  function lightLed(){
+    var led = $('led');
+    led.classList.add('on'); led.parentNode.classList.add('alert');
+    $('ledTxt').textContent = 'LED halkası yanıyor: su içme zamanı! (simülasyon)';
+    if(ledTimeout) clearTimeout(ledTimeout);
+    ledTimeout = setTimeout(function(){
+      led.classList.remove('on'); led.parentNode.classList.remove('alert');
+      $('ledTxt').textContent = 'LED halkası: sakin. Hatırlatma geldiğinde yanıp söner.';
+    }, 6000);
+  }
+  function fireReminder(){
+    lightLed();
+    toast('💧 Kendine bir yudum ayırma zamanı!', 'remind');
+    try{
+      if('Notification' in window && Notification.permission === 'granted'){
+        var opts = {body:'Kendine bir yudum ayır. 💧', icon:'icon-192.png', badge:'icon-192.png', tag:'aquamind-reminder', renotify:true, vibrate:[120,60,120]};
+        if(swReg && swReg.showNotification){ swReg.showNotification('AquaMind', opts); }
+        else { new Notification('AquaMind', opts); }
+      }
+    }catch(e){ /* uygulama içi bildirim yeterli */ }
+  }
+  function syncReminderUI(){
+    $('remToggle').checked = state.remind;
+    $('remLabel').textContent = state.remind ? 'Hatırlatmalar açık' : 'Hatırlatmalar kapalı';
+    $('interval').value = String(state.interval);
+    if($('interval').value !== String(state.interval)){
+      var o = document.createElement('option'); o.value=String(state.interval); o.textContent=state.interval+' saniye';
+      $('interval').appendChild(o); $('interval').value = String(state.interval);
+    }
+    updateNext();
+  }
+  $('remToggle').addEventListener('change', function(){
+    state.remind = this.checked; save(); syncReminderUI();
+    if(state.remind){
+      startTimer();
+      try{
+        if('Notification' in window && Notification.permission === 'default'){
+          var r = Notification.requestPermission();
+          if(r && r.then) r.then(function(p){
+            if(p !== 'granted') toast('Bildirim izni verilmedi; uyarılar uygulama içinde gösterilecek.');
+          });
+        }else if('Notification' in window && Notification.permission === 'denied'){
+          toast('Tarayıcı bildirimi kapalı; uyarılar uygulama içinde gösterilecek.');
+        }
+      }catch(e){}
+      toast('Hatırlatmalar açıldı (sayfa açıkken çalışır).');
+    }else{
+      stopTimer(); toast('Hatırlatmalar kapatıldı.');
+    }
+  });
+  $('interval').addEventListener('change', function(){
+    var n = parseInt(this.value,10);
+    if(!isFinite(n) || n <= 0) return;
+    state.interval = n; save();
+    if(state.remind) startTimer(); else updateNext();
+  });
+  $('testLed').addEventListener('click', function(){
+    lightLed(); toast('💧 Kendine bir yudum ayırma zamanı!', 'remind');
+  });
+
+  /* ---------- Yeni gün ---------- */
+  function rollover(){
+    var k = todayKey();
+    if(k !== currentKey){
+      currentKey = k;
+      if(!state.days[k]) state.days[k] = [];
+      save(); render();
+      toast('Yeni bir gün başladı. Günaydın! ☀️');
+    }
+  }
+  document.addEventListener('visibilitychange', function(){ if(!document.hidden){ rollover(); render(); } });
+  setInterval(function(){ render(); }, 60000);     // zaman çubuğunu güncel tut (ayrı, hafif bir güncelleme)
+
+  /* ---------- Sıfırlama ---------- */
+  var dlg = $('resetDlg');
+  $('resetBtn').addEventListener('click', function(){
+    if(typeof dlg.showModal === 'function') dlg.showModal();
+    else if(window.confirm('Tüm veriler silinsin mi? Bu işlem geri alınamaz.')) doReset();
+  });
+  $('rdCancel').addEventListener('click', function(){ dlg.close(); });
+  $('rdOk').addEventListener('click', function(){ dlg.close(); doReset(); });
+  function doReset(){
+    stopTimer();
+    try{ window.localStorage.removeItem(KEY); }catch(e){}
+    state = defaults(); state.user = auth.current && auth.users[auth.current] ? auth.users[auth.current].name : ''; memStore = state; currentKey = todayKey();
+    $('customMl').value=''; $('addErr').textContent=''; $('goalErr').textContent='';
+    syncReminderUI(); render(); applyUser();
+    toast('Tüm veriler sıfırlandı. Hesabın duruyor.');
+  }
+
+  /* ---------- Başlat ---------- */
+  if(auth.current){ enterUser(); }
+  else { syncReminderUI(); render(); applyUser(); showLogin(); }
+})();
+</script>
+</body>
+</html>
